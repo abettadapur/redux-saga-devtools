@@ -41,22 +41,22 @@ const Info = styled.span`
 
 class EffectEntry extends React.Component {
 
-  effectId  = this.props.effectId
+  effectId = this.props.effectId
   onSelect = () => this.props.onSelect(this.effectId)
   onCollapse = () => this.props.onCollapse(this.effectId)
   onPin = () => this.props.onPin(this.effectId)
   onUnpin = () => this.props.onUnpin(-1)
 
   render() {
-    const {effect, collapsed, pinned, hasChildren} = this.props
+    const { effect, collapsed, pinned, hasChildren } = this.props
 
     let pinNode
-    if(!effect.root) {
+    if (!effect.root) {
       pinNode = (
         pinned
-          ? <div onClick={this.onUnpin}><IconUnpin/></div>
-          : <div onClick={this.onPin}><IconPin/></div>
-        )
+          ? <div onClick={this.onUnpin}><IconUnpin /></div>
+          : <div onClick={this.onPin}><IconPin /></div>
+      )
     }
 
     return (
@@ -70,7 +70,7 @@ class EffectEntry extends React.Component {
             />
           </Cell>
           <Cell>
-            <Effect effect={effect}/>
+            <Effect effect={effect} />
           </Cell>
         </Row>
         {
@@ -96,16 +96,16 @@ EffectEntry.propTypes = {
   // passed by the parent component
   effectId: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
-  collapsed: PropTypes.bool.isRequired,
+  collapsed: PropTypes.any,
   onCollapse: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   // injected by Redux store
   effect: PropTypes.object.isRequired,
-  hasChildren: PropTypes.bool.isRequired,
+  hasChildren: PropTypes.any,
 }
 
 export default connect(
-  (state, {effectId}) =>{
+  (state, { effectId }) => {
     const effect = state.effectsById[effectId]
     return {
       effect,
