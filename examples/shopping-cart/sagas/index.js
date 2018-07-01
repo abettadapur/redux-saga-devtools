@@ -12,13 +12,14 @@ export function* getAllProducts() {
 }
 
 export function* checkout() {
-    try {
-      const cart = yield select(getCart)
-      yield call(api.buyProducts, cart)
-      yield put(actions.checkoutSuccess(cart))
-    } catch(error) {
-      yield put(actions.checkoutFailure(error))
-    }
+  try {
+    const cart = yield select(getCart)
+    yield call(api.buyProducts, cart)
+    yield call(() => { throw new Error("Catastrophic error") });
+    yield put(actions.checkoutSuccess(cart))
+  } catch (error) {
+    yield put(actions.checkoutFailure(error))
+  }
 }
 
 export function* watchGetProducts() {
@@ -30,7 +31,7 @@ export function* watchGetProducts() {
 }
 
 export function* watchCheckout() {
-  while(true) {
+  while (true) {
     yield take(actions.CHECKOUT_REQUEST)
     /*
       ***THIS IS A BLOCKING CALL***

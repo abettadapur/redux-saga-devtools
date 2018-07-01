@@ -15,15 +15,14 @@ function getTime() {
 }
 
 function postToContent(action) {
-    if (action.effect) {
-        action.effect = transformEffect(action.effect);
+    try {
+        window.postMessage({
+            source: "@sagaDevTools",
+            action: serialize(action)
+        }, "*");
+    } catch (e) {
+        console.error(e);
     }
-
-    window.postMessage({
-        source: "@sagaDevTools",
-        action: JSON.stringify(action)
-    }, "*");
-
 }
 
 export function createSagaRelayMonitor() {
@@ -96,45 +95,29 @@ export function createSagaRelayMonitor() {
     };
 }
 
-function transformEffect(effect) {
-    effect = { ...effect };
-
-    if (effect.saga) {
-        effect.saga = { name: effect.saga.name };
-    }
-
-    if (effect.fn) {
-        effect.fn = { name: effect.fn.name }
-    };
-
-    if (effect.CALL) {
-        transformEffectBody(effect, "CALL", effect.CALL);
-    }
-
-    if (effect.CPS) {
-        transformEffectBody(effect, "CPS", effect.CPS);
-    }
-
-    if (effect.FLUSH) {
-        effect.FLUSH = { name: effect.FLUSH.name }
-    }
-
-    if (effect.FORK) {
-        transformEffectBody(effect, "FORK", effect.FORK);
-    }
-
-    if (effect.SELECT) {
-        transformEffectBody(effect, "SELECT", effect.SELECT, "selector");
-    }
-
-    if (effect.effect) {
-        effect.effect = transformEffect(effect.effect);
-    }
-
-    return effect;
+function mapKeysDeep(object, cb) {
+    mapValues(
+        mapKeys(obj, cb),
+        val => (_.isObject(val) ? mapKeysDeep(val, cb) : val),
+    )
 }
 
-function transformEffectBody(effect, effectName, body, propName = "fn") {
-    effect[effectName] = { ...effect[effectName] };
-    effect[effectName][propName] = { name: effect[effectName][propName].name }
+function serialize(effect) {
+    const fns = [];
+    const placeholder = "___PLACEHOLDER___";
+    const result = JSON.stringify(effect, (key, value) => {
+        if (typeof value === "function") {
+            return { name: value.name };
+        }
+        if (value instanceof Error) {
+            return {
+                message: value.message,
+                name: value.name,
+                stack: value.stack
+            };
+        }
+        return value;
+    });
+
+    return result;
 }

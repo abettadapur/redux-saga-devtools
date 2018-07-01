@@ -10,7 +10,7 @@ import { STATUS_PENDING } from '../../store/constants'
 
 const EffectEntryContainer = styled.div`
   padding: 2px 60px 2px 10px;
-  position: relative;
+  display: flex;
 
   &:hover .effect-entry-toolbar {
     visibility: visible;
@@ -30,9 +30,7 @@ const Toolbar = styled.span`
 `
 
 const Info = styled.span`
-  position: absolute;
-  right: 2px;
-  top:2px;
+  flex: none;
   font-style: italic;
   font-size: 90%;
   color: gray;

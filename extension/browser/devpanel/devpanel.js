@@ -8,7 +8,6 @@ let backgroundConnection;
 
 function renderDevTools(store) {
     const containerElement = document.getElementById("container");
-    debugger;
     render(
         <DockableSagaView monitor={{ store: store }} />,
         container
