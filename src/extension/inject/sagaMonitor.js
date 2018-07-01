@@ -6,18 +6,20 @@ import {
     EFFECT_CANCELLED,
     ACTION_DISPATCHED
 } from '../../store/constants'
+import { EVENT_SOURCE } from '../constants';
 
 function getTime() {
-    if (typeof performance !== 'undefined' && performance.now)
+    if (performance && performance.now) {
         return performance.now()
-    else
+    } else {
         return Date.now()
+    }
 }
 
 function postToContent(action) {
     try {
         window.postMessage({
-            source: "@sagaDevTools",
+            source: EVENT_SOURCE,
             action: serialize(action)
         }, "*");
     } catch (e) {
@@ -104,7 +106,6 @@ function mapKeysDeep(object, cb) {
 
 function serialize(effect) {
     const fns = [];
-    const placeholder = "___PLACEHOLDER___";
     const result = JSON.stringify(effect, (key, value) => {
         if (typeof value === "function") {
             return { name: value.name };

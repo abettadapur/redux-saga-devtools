@@ -1,6 +1,7 @@
 import * as React from "react";
 import { render, unmountComponentAtNode } from "react-dom";
-import { DockableSagaView } from "../../";
+import { DockableSagaView } from "../../index";
+import { Events } from "../constants";
 
 let rendered = false;
 let backgroundWindow;
@@ -71,11 +72,11 @@ function init(id) {
 
     backgroundConnection = chrome.runtime.connect({ name: id ? id.toString() : undefined });
     backgroundConnection.onMessage.addListener((message) => {
-        if (message.type === "TAB_RECONNECTED") {
+        if (message.type === Events.TAB_RECONNECTED) {
             unmount();
             getBackgroundContextAndRender(id);
         }
-        if (message.type === "TAB_DISCONNECTED") {
+        if (message.type === Events.TAB_RECONNECTED) {
             unmount();
         }
     })

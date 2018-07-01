@@ -1,3 +1,5 @@
+import { TAB, Events, EVENT_SOURCE } from "../constants";
+
 // Listen to events from the saga monitor, and relay them to the background script
 
 let background;
@@ -5,12 +7,7 @@ let connected = false
 
 function connect() {
     connected = true;
-
-    if (window.devToolsExtensionID) {
-        background = chrome.runtime.connect(window.devToolsExtensionID, { name: "tab" });
-    } else {
-        background = chrome.runtime.connect({ name: "tab" });
-    }
+    background = chrome.runtime.connect({ name: TAB });
 }
 
 function sendMessage(message) {
@@ -18,13 +15,12 @@ function sendMessage(message) {
         connect();
     }
 
-    background.postMessage({ name: "RELAY", message });
+    background.postMessage({ name: Events.RELAY, message });
 }
 
 function handleMessages(event) {
     const message = event.data;
-    if (message.source == "@sagaDevTools") {
-        console.log("CONTENT: Recieved message: " + message);
+    if (message.source == EVENT_SOURCE) {
         sendMessage(message.action);
     }
 }
