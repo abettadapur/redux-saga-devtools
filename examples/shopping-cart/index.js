@@ -10,8 +10,8 @@ import rootReducer from './reducers'
 import rootSaga from './sagas'
 import { DockableSagaView, createSagaMonitor } from '../../src'
 
-const monitor = createSagaMonitor()
-const sagaMiddleware = createSagaMiddleware({sagaMonitor: monitor})
+const monitor = window["__SAGA_MONITOR_EXTENSION__"]
+const sagaMiddleware = createSagaMiddleware({ sagaMonitor: monitor })
 const store = createStore(
   rootReducer,
   applyMiddleware(sagaMiddleware)
@@ -24,7 +24,7 @@ ReactDOM.render(
     <Provider store={store}>
       <App />
     </Provider>
-    <DockableSagaView monitor={monitor}  />
+    <DockableSagaView monitor={monitor} />
   </div>,
   document.getElementById('root')
 )

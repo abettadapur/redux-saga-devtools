@@ -1,14 +1,15 @@
 import * as React from "react";
 import { render } from "react-dom";
+import { DockableSagaView } from "../../../src";
 
 let rendered = false;
 
 function renderDevTools() {
     const containerElement = document.getElementById("container");
-    render(
-        <div>Hello React</div>,
-        container
-    );
+    // render(
+    //     <DockableSagaView montior={null} />,
+    //     container
+    // );
 
     rendered = true;
 }

@@ -8,7 +8,7 @@ const distPath = path.join(__dirname, "dist");
 const baseConfig = (params) => ({
     mode: "development",
     entry: {
-        //        background: [`${extpath}background/index`],
+        background: [path.join(extpath, "background", "background")],
         //      options: [`${extpath}options/index`],
         //    window: [`${extpath}window/index`],
         devpanel: [path.join(extpath, "devpanel", "devpanel")],

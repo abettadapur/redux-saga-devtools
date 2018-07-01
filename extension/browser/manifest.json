@@ -4,6 +4,12 @@
     "description": "Redux saga dev tools",
     "manifest_version": 2,
     "devtools_page": "devtools.html",
+    "background": {
+        "scripts": [
+            "js/background.bundle.js"
+        ],
+        "persistent": false
+    },
     "content_scripts": [
         {
             "matches": [

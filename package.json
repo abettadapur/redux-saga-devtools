@@ -44,7 +44,7 @@
     "prepublish": "npm run lint && npm run test && npm run compile",
     "counter": "budo ./examples/cancellable-counter/index.js:build.js --dir ./examples/cancellable-counter --live",
     "shopping-cart": "budo ./examples/shopping-cart/index.js:build.js --dir ./examples/shopping-cart --live",
-    "webpack": "webpack"
+    "webpack": "rm -rf dist && webpack"
   },
   "browserify": {
     "transform": [
