@@ -1,6 +1,7 @@
 import { createSagaMonitor } from "../../store/createSagaMonitor";
 import { createStore } from "redux";
 import rootReducer from "../../store/reducers";
+import { Events, TAB } from "../constants";
 
 let storeMap = {};
 let contentConnections = {};
@@ -12,12 +13,12 @@ function getId(sender) {
 
 function onConnect(port) {
     let senderId;
-    if (port.name === "tab") {
+    if (port.name === TAB) {
         senderId = getId(port.sender);
         storeMap[senderId] = createStore(rootReducer);
 
         const listener = (message) => {
-            if (message.name === "RELAY") {
+            if (message.name === Events.RELAY) {
                 onMessage(message.message, port);
             }
         }
@@ -30,7 +31,7 @@ function onConnect(port) {
         const devPanelConnection = panelConnections[senderId];
         if (devPanelConnection) {
             devPanelConnection.postMessage({
-                type: "TAB_RECONNECTED"
+                type: Events.TAB_RECONNECTED
             });
         }
 
@@ -48,14 +49,14 @@ function onMessage(message, port) {
 
 function onDisconnect(type, id) {
     return () => {
-        if (type === "tab") {
+        if (type === TAB) {
             delete contentConnections[id];
             delete storeMap[id];
 
             const devPanelConnection = panelConnections[id];
             if (devPanelConnection) {
                 devPanelConnection.postMessage({
-                    type: "TAB_DISCONNECTED"
+                    type: Events.TAB_DISCONNECTED
                 });
             }
         }
