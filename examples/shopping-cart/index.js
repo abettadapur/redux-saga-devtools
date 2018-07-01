@@ -24,7 +24,6 @@ ReactDOM.render(
     <Provider store={store}>
       <App />
     </Provider>
-    <DockableSagaView monitor={monitor} />
   </div>,
   document.getElementById('root')
 )

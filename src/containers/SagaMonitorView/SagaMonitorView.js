@@ -55,31 +55,44 @@ class SagaMonitorView extends React.Component {
   }
 
   render() {
+    const content = this.renderContent();
+    if (this.props.useDock) {
+      return (
+        <Dock>
+          {content}
+        </Dock>
+      )
+    } else {
+      return content;
+    }
+  }
+
+  renderContent() {
     return (
-      <Dock>
-        <SagaMonitorContainer>
-          <SagaMonitorHeader>
-            <Row>
-              {this.renderViewOption(EFFECT_VIEW)}
-              {this.renderViewOption(ACTION_VIEW)}
-              <hr style={{ width: OPTION_WIDTH, left: OPTION_WIDTH * this.state.currentViewIndex }} />
-            </Row>
-          </SagaMonitorHeader>
-          <SagaMonitorBody>
-            {this.renderCurrentView()}
-          </SagaMonitorBody>
-        </SagaMonitorContainer>
-      </Dock>
-    )
+      <SagaMonitorContainer>
+        <SagaMonitorHeader>
+          <Row>
+            {this.renderViewOption(EFFECT_VIEW)}
+            {this.renderViewOption(ACTION_VIEW)}
+            <hr style={{ width: OPTION_WIDTH, left: OPTION_WIDTH * this.state.currentViewIndex }} />
+          </Row>
+        </SagaMonitorHeader>
+        <SagaMonitorBody>
+          {this.renderCurrentView()}
+        </SagaMonitorBody>
+      </SagaMonitorContainer>
+    );
   }
 }
 
 SagaMonitorView.propTypes = {
   rootEffectIds: PropTypes.array.isRequired,
+  useDock: PropTypes.bool
 }
 
 export default connect(
-  state => ({
-    rootEffectIds: state.rootEffectIds
+  (state, ownProps) => ({
+    rootEffectIds: state.rootEffectIds,
+    ...ownProps
   })
 )(SagaMonitorView)

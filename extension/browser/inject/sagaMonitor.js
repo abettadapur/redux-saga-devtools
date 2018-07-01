@@ -15,6 +15,10 @@ function getTime() {
 }
 
 function postToContent(action) {
+    if (action.effect) {
+        action.effect = transformEffect(action.effect);
+    }
+
     window.postMessage({
         source: "@sagaDevTools",
         action: JSON.stringify(action)
@@ -77,16 +81,60 @@ export function createSagaRelayMonitor() {
 
     function actionDispatched(action) {
         const isSagaAction = action[SAGA_ACTION]
+        const now = getTime();
         postToContent({
             type: ACTION_DISPATCHED,
             id: now,
             action,
             isSagaAction,
-            time: getTime()
+            time: now
         })
     }
 
     return {
         effectTriggered, effectResolved, effectRejected, effectCancelled, actionDispatched
     };
+}
+
+function transformEffect(effect) {
+    effect = { ...effect };
+
+    if (effect.saga) {
+        effect.saga = { name: effect.saga.name };
+    }
+
+    if (effect.fn) {
+        effect.fn = { name: effect.fn.name }
+    };
+
+    if (effect.CALL) {
+        transformEffectBody(effect, "CALL", effect.CALL);
+    }
+
+    if (effect.CPS) {
+        transformEffectBody(effect, "CPS", effect.CPS);
+    }
+
+    if (effect.FLUSH) {
+        effect.FLUSH = { name: effect.FLUSH.name }
+    }
+
+    if (effect.FORK) {
+        transformEffectBody(effect, "FORK", effect.FORK);
+    }
+
+    if (effect.SELECT) {
+        transformEffectBody(effect, "SELECT", effect.SELECT, "selector");
+    }
+
+    if (effect.effect) {
+        effect.effect = transformEffect(effect.effect);
+    }
+
+    return effect;
+}
+
+function transformEffectBody(effect, effectName, body, propName = "fn") {
+    effect[effectName] = { ...effect[effectName] };
+    effect[effectName][propName] = { name: effect[effectName][propName].name }
 }

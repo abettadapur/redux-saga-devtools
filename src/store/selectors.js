@@ -6,52 +6,52 @@ export function getEffectName(state, effectId) {
 
   const effect = state.effectsById[effectId].effect
 
-  if(effect.root) {
-    return `${effect.saga.name}`
+  if (effect.root) {
+    return `ROOT`;//${effect.saga.name}`
   }
 
   let data
-  if((data = asEffect.take(effect))) {
+  if ((data = asEffect.take(effect))) {
     return `take(${data.pattern || 'channel'})`
   }
-  else if((data = asEffect.put(effect))) {
+  else if ((data = asEffect.put(effect))) {
     return `put(${(data.channel ? data.action : data.action.type)})`
   }
-  else if((data = asEffect.call(effect))) {
+  else if ((data = asEffect.call(effect))) {
     return `call(${data.fn.name})`
   }
-  else if((data = asEffect.cps(effect))) {
+  else if ((data = asEffect.cps(effect))) {
     return `cps(${data.fn.name})`
   }
-  else if((data = asEffect.fork(effect))) {
+  else if ((data = asEffect.fork(effect))) {
     const type = data.detached ? 'spawn' : 'fork'
     return `${type}(${data.fn.name})`
   }
-  else if((data = asEffect.join(effect))) {
+  else if ((data = asEffect.join(effect))) {
     return `join(${data.name})`
   }
-  else if((data = asEffect.cancel(effect))) {
+  else if ((data = asEffect.cancel(effect))) {
     return `cancel(${data.name})`
   }
-  else if(is.array(effect)) {
+  else if (is.array(effect)) {
     return 'parallel'
   }
-  else if((data = asEffect.race(effect))) {
+  else if ((data = asEffect.race(effect))) {
     return 'race'
   }
-  else if((data = asEffect.select(effect))) {
+  else if ((data = asEffect.select(effect))) {
     return `select(${data.selector.name})`
   }
-  else if((data = asEffect.actionChannel(effect))) {
+  else if ((data = asEffect.actionChannel(effect))) {
     return `actionChannel(${data.pattern})`
   }
-  else if((data = asEffect.cancelled(effect))) {
+  else if ((data = asEffect.cancelled(effect))) {
     return 'cancelled'
   }
-  else if((data = asEffect.flush(effect))) {
+  else if ((data = asEffect.flush(effect))) {
     return 'flush(buffer)'
   }
-  else if(is.iterator(effect)) {
+  else if (is.iterator(effect)) {
     return effect.effect.name
   }
   else {
@@ -65,11 +65,11 @@ export function getReactions(state, action) {
   const effectsById = state.effectsById
   Object.keys(effectsById).forEach(effectId => {
     const effect = effectsById[effectId]
-    if(asEffect.take(effect.effect)) {
+    if (asEffect.take(effect.effect)) {
       const status = effect.status
-      if(status === STATUS_RESOLVED) {
+      if (status === STATUS_RESOLVED) {
         const result = effect.result
-        if(result === action) {
+        if (result === action) {
           const task = getTaskForEffect(state, effect)
           reactions.push(task)
         }
@@ -81,9 +81,9 @@ export function getReactions(state, action) {
 
 export function getTaskForEffect(state, effect) {
   let parentId = effect.parentEffectId
-  while(parentId) {
+  while (parentId) {
     const parent = state.effectsById[parentId]
-    if(parent.root || asEffect.fork(parent.effect) || asEffect.call(parent.effect)) {
+    if (parent.root || asEffect.fork(parent.effect) || asEffect.call(parent.effect)) {
       return parentId
     }
     parentId = parent.parentEffectId
@@ -93,7 +93,7 @@ export function getTaskForEffect(state, effect) {
 export function getPathToEffect(state, effectId, rootEffectIds) {
   let path = state.effectsById[effectId].path
   let k = 0
-  while(rootEffectIds.indexOf(path[k]) < 0) {
+  while (rootEffectIds.indexOf(path[k]) < 0) {
     k++
   }
   return path.slice(k)
@@ -101,8 +101,8 @@ export function getPathToEffect(state, effectId, rootEffectIds) {
 
 export function isParentOf(effectsById, parentId, effectId) {
   effectId = effectsById[effectId].parentEffectId
-  while(effectId) {
-    if(effectId === parentId) {
+  while (effectId) {
+    if (effectId === parentId) {
       return true
     }
     effectId = effectsById[effectId].parentEffectId

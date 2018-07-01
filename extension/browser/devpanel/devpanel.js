@@ -1,17 +1,25 @@
 import * as React from "react";
-import { render } from "react-dom";
+import { render, unmountComponentAtNode } from "react-dom";
 import { DockableSagaView } from "../../../src";
 
 let rendered = false;
+let backgroundWindow;
+let backgroundConnection;
 
-function renderDevTools() {
+function renderDevTools(store) {
     const containerElement = document.getElementById("container");
-    // render(
-    //     <DockableSagaView montior={null} />,
-    //     container
-    // );
+    debugger;
+    render(
+        <DockableSagaView monitor={{ store: store }} />,
+        container
+    );
 
     rendered = true;
+}
+
+function unmount() {
+    const containerElement = document.getElementById("container");
+    unmountComponentAtNode(containerElement);
 }
 
 function renderNA() {
@@ -47,21 +55,31 @@ function renderNA() {
     // }, 3500);
 }
 
-
+function getBackgroundContextAndRender(id) {
+    setTimeout(() => {
+        chrome.runtime.getBackgroundPage((window) => {
+            const storeMap = window.storeMap;
+            if (storeMap && storeMap[id]) {
+                renderDevTools(storeMap[id]);
+            }
+        })
+    }, 100);
+}
 
 function init(id) {
     renderNA();
-    setTimeout(() => renderDevTools(), 100);
-    // bgConnection = chrome.runtime.connect({ name: id ? id.toString() : undefined });
-    // bgConnection.onMessage.addListener(message => {
-    //     if (message.type === 'NA') {
-    //         if (message.id === id) renderNA();
-    //         else store.dispatch({ type: REMOVE_INSTANCE, id: message.id });
-    //     } else {
-    //         if (!rendered) renderDevTools();
-    //         store.dispatch(message);
-    //     }
-    // });
+    getBackgroundContextAndRender(id);
+
+    backgroundConnection = chrome.runtime.connect({ name: id ? id.toString() : undefined });
+    backgroundConnection.onMessage.addListener((message) => {
+        if (message.type === "TAB_RECONNECTED") {
+            unmount();
+            getBackgroundContextAndRender(id);
+        }
+        if (message.type === "TAB_DISCONNECTED") {
+            unmount();
+        }
+    })
 }
 
 init(chrome.devtools.inspectedWindow.tabId);
