@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
-const extpath = path.join(__dirname, './extension/browser/');
+const extpath = path.join(__dirname, './src/extension/browser/');
 const distPath = path.join(__dirname, "dist");
 
 const baseConfig = (params) => ({
